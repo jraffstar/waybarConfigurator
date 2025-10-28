@@ -1,12 +1,24 @@
 from tkinter import messagebox, ttk
 from tkinter import *
 
+from webcolors import name_to_hex
+
 window = Tk()
 canvas = Canvas(width=10000, height=10000)
+
+f = open("style.css", "a")
 
 
 
 colours = ["white", "black", "purple", "yellow", "red", "blue", "skyblue", "mediumorchid", "mediumpurple", "magenta", "lightpink", "lightgrey", "lightcoral", "lawngreen", "indigo", "indianred", "hotpink"]
+
+def color_name_to_code(color_name):
+    try:
+        color_code = name_to_hex(color_name)
+        return color_code
+
+    except ValueError:
+        return None
 
 # Function to change the outline of the workspace indicator to whatever the user selects
 def changeWorkspaceOutlineColour():
@@ -32,6 +44,22 @@ def changeFontColour():
     hoveringWorkspaceNumber.configure(fg=fontColourSelection.get())
     workspace5Number.configure(fg=fontColourSelection.get())
 
+
+
+def writetofile():
+    fontcol = color_name_to_code(fontColourSelection.get())
+    hovcol = color_name_to_code(hoverColourSelection.get())
+    bgcol = color_name_to_code(bgColourSelection.get())
+    outlinecol = color_name_to_code(outlineColourSelection.get())
+
+    f.write("#window { \n   color: " + str(fontcol) + ";\n}\n\n")
+    f.write("#workspaces button:hover { \n  background-color: " + str(hovcol) + ";\n}\n\n")
+    f.write("#workspaces button.active { \n background-color: " + str(bgcol) + ";\n}\n\n")
+    f.write("#workspaces { \n   border-style: solid;\n  border-color: " + str(outlinecol) + ";\n}\n\n")
+
+    f.close()
+
+writeChanges = ttk.Button(window, text="write", command=lambda: writetofile())
 
 outlineColourSelectionLabel = Label(window, text="Outline Colour")
 outlineColourSelection = ttk.Combobox(state="readonly", values=colours)
@@ -95,6 +123,8 @@ activeWorkspaceNumber.place(x=135, y=15)
 workspace3Number.place(x=237, y=15)
 hoveringWorkspaceNumber.place(x=335, y=15)
 workspace5Number.place(x=437, y=15)
+
+writeChanges.place(x=0, y=300)
 
 canvas.place(relx=0, rely=0)
 
